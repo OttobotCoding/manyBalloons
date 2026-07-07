@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  # MongoDB — data persisted to Unraid appdata folder
+  mongo:
+    image: mongo:7
+    container_name: birthday-tracker-mongo
+    restart: unless-stopped
+    volumes:
+      - /mnt/user/appdata/birthday-tracker/mongo:/data/db
+    networks:
+      - bt-network
+
+  # Node/Express API — also serves the React build in production
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: birthday-tracker-app
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/birthday_tracker
+      NODE_ENV: production
+    volumes:
+      - /mnt/user/appdata/birthday-tracker/uploads:/app/server/uploads
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    networks:
+      - bt-network
+
+networks:
+  bt-network:
+    driver: bridge

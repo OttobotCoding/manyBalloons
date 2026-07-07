@@ -1,0 +1,138 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\msmig\\Documents\\birthday-tracker\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\components\\FriendCard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\components\\FriendCard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\FriendDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\FriendDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\routes\\friends.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\friends.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\models\\Friend.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\models\\Friend.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\.env||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\.env||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FriendCard.jsx",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\components\\FriendCard.jsx",
+              "RelativeDocumentMoniker": "client\\src\\components\\FriendCard.jsx",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\components\\FriendCard.jsx",
+              "RelativeToolTip": "client\\src\\components\\FriendCard.jsx",
+              "ViewState": "AgIAABQAAAAAAAAAAAAAwCYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-06-26T02:13:00.879Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Dashboard.jsx",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\Dashboard.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\Dashboard.jsx",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\Dashboard.jsx",
+              "RelativeToolTip": "client\\src\\pages\\Dashboard.jsx",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-06-26T02:12:09.115Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "index.js",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\index.js",
+              "RelativeDocumentMoniker": "server\\index.js",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\index.js",
+              "RelativeToolTip": "server\\index.js",
+              "ViewState": "AgIAADEAAAAAAAAAAAAAAEgAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-25T18:23:10.328Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "friends.js",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\routes\\friends.js",
+              "RelativeDocumentMoniker": "server\\routes\\friends.js",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\routes\\friends.js",
+              "RelativeToolTip": "server\\routes\\friends.js",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAKIAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-25T16:15:44.983Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FriendDetail.jsx",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\FriendDetail.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\FriendDetail.jsx",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\client\\src\\pages\\FriendDetail.jsx",
+              "RelativeToolTip": "client\\src\\pages\\FriendDetail.jsx",
+              "ViewState": "AgIAAKoAAAAAAAAAAAAAwKoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-06-25T14:45:38.562Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Friend.js",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\models\\Friend.js",
+              "RelativeDocumentMoniker": "server\\models\\Friend.js",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\models\\Friend.js",
+              "RelativeToolTip": "server\\models\\Friend.js",
+              "ViewState": "AgIAAIwAAAAAAAAAAAAkwJcAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-25T14:30:33.028Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": ".env",
+              "DocumentMoniker": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\.env",
+              "RelativeDocumentMoniker": "server\\.env",
+              "ToolTip": "C:\\Users\\msmig\\Documents\\birthday-tracker\\server\\.env",
+              "RelativeToolTip": "server\\.env",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-06-25T13:30:16.567Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
