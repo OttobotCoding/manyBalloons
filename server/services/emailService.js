@@ -74,7 +74,7 @@ function buildEmailHtml(friends, daysBefore) {
 
         <!-- Header -->
         <div style="background:linear-gradient(90deg,#6c47ff,#a37bff);padding:24px 32px;">
-          <h1 style="margin:0;color:#fff;font-size:22px;">🎂 BirthdayTracker</h1>
+          <h1 style="margin:0;color:#fff;font-size:22px;">🎈 Many Balloons</h1>
           <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">
             Your birthday reminder for today
           </p>
@@ -89,7 +89,7 @@ function buildEmailHtml(friends, daysBefore) {
             ${rows}
           </table>
           <p style="margin:20px 0 0;font-size:13px;color:#aaa;text-align:center;">
-            Sent by BirthdayTracker · Notifications are set to ${daysBefore} day(s) before each birthday
+            Sent by Many Ballons · Notifications are set to ${daysBefore} day(s) before each birthday
           </p>
         </div>
       </div>
@@ -114,7 +114,7 @@ async function sendBirthdayEmail(settings, friends) {
     : `🎂 ${friends.length} upcoming birthdays`;
 
   await transporter.sendMail({
-    from: `"BirthdayTracker" <${from}>`,
+    from: `"Many Balloons" <${from}>`,
     to: settings.notificationEmail,
     subject,
     html: buildEmailHtml(friends, settings.notifyDaysBefore),
@@ -131,12 +131,12 @@ async function sendTestEmail(settings) {
   const from = settings.smtpFrom || settings.smtpUser;
 
   await transporter.sendMail({
-    from: `"BirthdayTracker" <${from}>`,
+    from: `"Many Balloons" <${from}>`,
     to: settings.notificationEmail,
     subject: '✅ BirthdayTracker — test email',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:32px auto;padding:24px;background:#fff;border-radius:12px;border:1px solid #eee;">
-        <h2 style="color:#6c47ff;">🎂 BirthdayTracker</h2>
+        <h2 style="color:#6c47ff;">🎈 Many Balloons</h2>
         <p>Your email notifications are configured correctly!</p>
         <p style="color:#666;font-size:14px;">
           You will receive reminders ${settings.notifyDaysBefore} day(s) before each birthday.

@@ -184,7 +184,7 @@ export default function FriendForm() {
             <input
               id="birthday" name="birthday" type="date"
               value={form.birthday} onChange={handleChange}
-              max={format(new Date(), 'yyyy-MM-dd')}
+              max={new Date().toISOString().split('T')[0]}
               className={errors.birthday ? styles.inputError : ''}
             />
             {errors.birthday && <span className={styles.error}>{errors.birthday}</span>}

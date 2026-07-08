@@ -1,19 +1,18 @@
 /**
  * client/src/services/api.js
  * Centralised Axios instance + all API call functions.
- * Components should import from here, never call fetch/axios directly.
  */
 
 import axios from 'axios';
 
-// Base instance — proxy in package.json forwards /api → http://localhost:5000
 const api = axios.create({
-  baseURL: '/api',
-  headers: { 'Content-Type': 'application/json' },
-  timeout: 15000,
+  baseURL:         '/api',
+  headers:         { 'Content-Type': 'application/json' },
+  timeout:         15000,
+  withCredentials: true, // send cookies on every request
 });
 
-// ── Response interceptor: unwrap { success, data } envelope ──────────────────
+// Unwrap { success, data } envelope; extract error message on failure
 api.interceptors.response.use(
   (res) => res.data,
   (err) => {
@@ -26,31 +25,19 @@ api.interceptors.response.use(
   }
 );
 
-// ── Friends API ───────────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────────────────────
+export const checkSetupNeeded = () => api.get('/auth/setup-status');
+export const setupAccount     = (payload) => api.post('/auth/setup', payload);
+export const loginUser        = (payload) => api.post('/auth/login', payload);
+export const logoutUser       = ()        => api.post('/auth/logout');
+export const getMe            = ()        => api.get('/auth/me');
+export const changePassword   = (payload) => api.put('/auth/password', payload);
 
-/**
- * Fetch all friends. Optionally filter by search string or relationship.
- * @param {{ search?: string, relationship?: string, sort?: string }} params
- */
-export const getFriends = (params = {}) =>
-  api.get('/friends', { params });
+// ── Friends ───────────────────────────────────────────────────────────────────
+export const getFriends           = (params = {}) => api.get('/friends', { params });
+export const getUpcomingBirthdays = (days = 30)   => api.get('/friends/upcoming', { params: { days } });
+export const getFriendById        = (id)           => api.get(`/friends/${id}`);
 
-/**
- * Fetch friends with birthdays within `days` days (default 30).
- */
-export const getUpcomingBirthdays = (days = 30) =>
-  api.get('/friends/upcoming', { params: { days } });
-
-/**
- * Fetch a single friend by Mongo _id.
- */
-export const getFriendById = (id) =>
-  api.get(`/friends/${id}`);
-
-/**
- * Create a new friend. Accepts a FormData object (for photo upload)
- * or a plain JS object (no photo).
- */
 export const createFriend = (payload) => {
   const isFormData = payload instanceof FormData;
   return api.post('/friends', payload, {
@@ -58,9 +45,6 @@ export const createFriend = (payload) => {
   });
 };
 
-/**
- * Update an existing friend by id.
- */
 export const updateFriend = (id, payload) => {
   const isFormData = payload instanceof FormData;
   return api.put(`/friends/${id}`, payload, {
@@ -68,18 +52,9 @@ export const updateFriend = (id, payload) => {
   });
 };
 
-/**
- * Delete a friend by id.
- */
-export const deleteFriend = (id) =>
-    api.delete(`/friends/${id}`);
+export const deleteFriend = (id) => api.delete(`/friends/${id}`);
 
-//---- Settings API ------------------------------------------------------------
-export const getSettings = () =>
-    api.get('/settings');
-
-export const updateSettings = (payload) =>
-    api.put('/settings', payload);
-
-export const sendTestEmail = () =>
-    api.post('/settings/test');
+// ── Settings ──────────────────────────────────────────────────────────────────
+export const getSettings    = ()        => api.get('/settings');
+export const updateSettings = (payload) => api.put('/settings', payload);
+export const sendTestEmail  = ()        => api.post('/settings/test');

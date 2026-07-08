@@ -10,6 +10,7 @@
   gap: 0.85rem;
   position: relative;
   transition: box-shadow 0.2s, transform 0.15s, background 0.2s, border-color 0.2s;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -24,15 +25,18 @@
 
 .ribbon {
   position: absolute;
-  top: 10px;
-  right: -28px;
+  top: 18px;
+  right: -45px;
   background: var(--ribbon-bg);
   color: var(--ribbon-text);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: 3px 36px;
+  padding: 4px 44px;
   transform: rotate(40deg);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  text-align: center;
 }
 
 /* ── Header ── */

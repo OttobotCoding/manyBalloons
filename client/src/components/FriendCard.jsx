@@ -55,7 +55,7 @@ export default function FriendCard({ friend, isUpcoming, onDeleteRequest }) {
   return (
     <div className={`${styles.card} ${isUpcoming ? styles.upcoming : ''}`}>
       {/* Upcoming ribbon */}
-      {isUpcoming && <div className={styles.ribbon}>Upcoming 🎂</div>}
+      {isUpcoming && <div className={styles.ribbon}>Upcoming 🎈</div>}
 
       {/* Card header: avatar + name + relationship */}
       <div className={styles.header}>
