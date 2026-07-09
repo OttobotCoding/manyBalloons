@@ -73,7 +73,7 @@ export default function Layout() {
       <main className={styles.main}><Outlet /></main>
 
       <footer className={styles.footer}>
-        <p>© {new Date().getFullYear()} BirthdayTracker — never miss a birthday.</p>
+        <p>© {new Date().getFullYear()} Many Balloons — never miss a birthday.</p>
       </footer>
     </div>
   );
