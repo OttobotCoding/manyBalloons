@@ -18,6 +18,7 @@ export default function Login() {
 
   const [isSetup,      setIsSetup]      = useState(false); // true = first-run setup mode
   const [checking,     setChecking]     = useState(true);  // checking setup status
+  const [checkError,   setCheckError]   = useState(null);  // couldn't reach the API
   const [submitting,   setSubmitting]   = useState(false);
   const [showPass,     setShowPass]     = useState(false);
 
@@ -33,10 +34,17 @@ export default function Login() {
   useEffect(() => {
     async function check() {
       try {
-        const res = await checkSetupNeeded();
-        setIsSetup(res.needsSetup);
-      } catch {
-        setIsSetup(false);
+        const res = await fetch('/api/auth/setup-status');
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        const data = await res.json();
+        console.log('[Login] setup-status:', data);
+        setIsSetup(data.needsSetup);
+      } catch (err) {
+        // Don't silently assume "login mode" here — a failed check usually
+        // means the API server isn't running or can't reach MongoDB, and
+        // defaulting to the login form hides that from the user entirely.
+        console.error('[Login] error:', err);
+        setCheckError('Could not reach the server. Make sure the API server is running and connected to MongoDB.');
       } finally {
         setChecking(false);
       }
@@ -94,6 +102,19 @@ export default function Login() {
       <div className={styles.page}>
         <div className={styles.card}>
           <p className={styles.checking}>🎂 Loading…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (checkError) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <h1 className={styles.logo}>🎈 Many Balloons</h1>
+          </div>
+          <p className={styles.error}>{checkError}</p>
         </div>
       </div>
     );
