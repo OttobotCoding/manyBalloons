@@ -9,10 +9,9 @@ const api = axios.create({
   baseURL:         '/api',
   headers:         { 'Content-Type': 'application/json' },
   timeout:         15000,
-  withCredentials: true, // send cookies on every request
+  withCredentials: true,
 });
 
-// Unwrap { success, data } envelope; extract error message on failure
 api.interceptors.response.use(
   (res) => res.data,
   (err) => {
@@ -27,11 +26,11 @@ api.interceptors.response.use(
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const checkSetupNeeded = () => api.get('/auth/setup-status');
-export const setupAccount     = (payload) => api.post('/auth/setup', payload);
-export const loginUser        = (payload) => api.post('/auth/login', payload);
-export const logoutUser       = ()        => api.post('/auth/logout');
-export const getMe            = ()        => api.get('/auth/me');
-export const changePassword   = (payload) => api.put('/auth/password', payload);
+export const setupAccount     = (p)  => api.post('/auth/setup', p);
+export const loginUser        = (p)  => api.post('/auth/login', p);
+export const logoutUser       = ()   => api.post('/auth/logout');
+export const getMe            = ()   => api.get('/auth/me');
+export const changePassword   = (p)  => api.put('/auth/password', p);
 
 // ── Friends ───────────────────────────────────────────────────────────────────
 export const getFriends           = (params = {}) => api.get('/friends', { params });
@@ -55,6 +54,21 @@ export const updateFriend = (id, payload) => {
 export const deleteFriend = (id) => api.delete(`/friends/${id}`);
 
 // ── Settings ──────────────────────────────────────────────────────────────────
-export const getSettings    = ()        => api.get('/settings');
-export const updateSettings = (payload) => api.put('/settings', payload);
-export const sendTestEmail  = ()        => api.post('/settings/test');
+export const getSettings    = ()  => api.get('/settings');
+export const updateSettings = (p) => api.put('/settings', p);
+export const sendTestEmail  = ()  => api.post('/settings/test');
+
+// ── Groups ────────────────────────────────────────────────────────────────────
+export const getGroups    = ()       => api.get('/groups');
+export const createGroup  = (p)      => api.post('/groups', p);
+export const updateGroup  = (id, p)  => api.put(`/groups/${id}`, p);
+export const deleteGroup  = (id)     => api.delete(`/groups/${id}`);
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+export const getAdminStats    = ()           => api.get('/admin/stats');
+export const getAdminUsers    = ()           => api.get('/admin/users');
+export const createAdminUser  = (p)          => api.post('/admin/users', p);
+export const updateUserRole   = (id, role)   => api.put(`/admin/users/${id}/role`, { role });
+export const resetUserPassword= (id, p)      => api.put(`/admin/users/${id}/password`, p);
+export const deleteAdminUser  = (id)         => api.delete(`/admin/users/${id}`);
+export const getActivityLogs  = (params = {})=> api.get('/admin/logs', { params });

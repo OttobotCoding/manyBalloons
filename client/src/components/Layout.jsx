@@ -30,7 +30,7 @@ export default function Layout() {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link to="/" className={styles.logo}>🎈 Many Balloons</Link>
+        <Link to="/" className={styles.logo}>🎂 BirthdayTracker</Link>
 
         <nav className={styles.nav}>
           {NAV_LINKS.map(({ to, label, end }) => (
@@ -59,6 +59,9 @@ export default function Layout() {
           {user && (
             <div className={styles.userArea}>
               <span className={styles.username}>👤 {user.username}</span>
+              {user.role === 'admin' && (
+                <Link to="/admin" className={styles.adminLink}>Admin</Link>
+              )}
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Sign out
               </button>
@@ -70,7 +73,7 @@ export default function Layout() {
       <main className={styles.main}><Outlet /></main>
 
       <footer className={styles.footer}>
-        <p>© {new Date().getFullYear()} Many Balloons — never miss a birthday.</p>
+        <p>© {new Date().getFullYear()} BirthdayTracker — never miss a birthday.</p>
       </footer>
     </div>
   );

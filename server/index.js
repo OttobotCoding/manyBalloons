@@ -16,13 +16,15 @@ require('dotenv').config();
 const authRoutes     = require('./routes/auth');
 const friendRoutes   = require('./routes/friends');
 const settingsRoutes = require('./routes/settings');
+const adminRoutes    = require('./routes/admin');
+const groupRoutes    = require('./routes/groups');
 const requireAuth    = require('./middleware/requireAuth');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { startScheduler } = require('./services/scheduler');
 
 const app      = express();
 const PORT     = process.env.PORT     || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/birthday_tracker';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/many_balloons';
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -45,6 +47,8 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', timestamp: new Da
 // ── Protected routes (JWT required) ──────────────────────────────────────────
 app.use('/api/friends',  requireAuth, friendRoutes);
 app.use('/api/settings', requireAuth, settingsRoutes);
+app.use('/api/groups',   requireAuth, groupRoutes);
+app.use('/api/admin',    requireAuth, adminRoutes);
 
 // ── Serve React build ─────────────────────────────────────────────────────────
 const buildPath = path.join(__dirname, '..', 'client', 'build');
@@ -66,9 +70,16 @@ if (fs.existsSync(path.join(buildPath, 'index.html'))) {
 // ── Error handling ────────────────────────────────────────────────────────────
 app.use(errorHandler);
 
+// Temporary - print all registered routes
+app._router.stack
+  .filter(r => r.regexp)
+  .forEach(r => console.log('[route]', r.regexp));
+
 // ── Database + server start ───────────────────────────────────────────────────
+// serverSelectionTimeoutMS keeps this from hanging silently for 30s (mongoose's
+// default) when MongoDB isn't running/reachable — fail fast and say so.
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
   .then(() => {
     console.log(`✅  MongoDB connected → ${MONGO_URI}`);
     startScheduler();
