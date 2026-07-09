@@ -1,6 +1,6 @@
 {
   "name": "many-balloons-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "REST API for Many Balloons app",
   "main": "index.js",
   "scripts": {
