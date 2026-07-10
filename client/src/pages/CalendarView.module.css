@@ -1,0 +1,350 @@
+/* CalendarView.module.css */
+
+.page { max-width: 900px; margin: 0 auto; }
+
+.pageHeader { margin-bottom: 1.5rem; }
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* ── Calendar card ── */
+.calendarCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ── Month navigation ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.navBtn {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.navBtn:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.navCenter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.monthLabel {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 180px;
+  text-align: center;
+}
+
+.todayBtn {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.todayBtn:hover { background: var(--accent-lighter); }
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.dayHeader {
+  text-align: center;
+  padding: 0.6rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface-2);
+}
+
+/* ── Cells ── */
+.cell {
+  min-height: 80px;
+  padding: 6px 8px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+/* Remove right border on last column */
+.cell:nth-child(7n) { border-right: none; }
+
+/* Remove bottom border on last row */
+.cell:nth-last-child(-n+7) { border-bottom: none; }
+
+.cellOtherMonth .dateNum {
+  color: var(--text-hint);
+}
+
+.cellOtherMonth {
+  background: var(--bg-surface-2);
+  opacity: 0.6;
+}
+
+.cellToday {
+  background: var(--accent-light) !important;
+}
+
+.cellToday .dateNum {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.cellClickable {
+  cursor: pointer;
+}
+
+.cellClickable:hover {
+  background: var(--bg-surface-2);
+}
+
+.cellHasBirthday {
+  border-top: 2px solid var(--accent);
+}
+
+.dateNum {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Avatar dots inside cell ── */
+.avatars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.avatarWrap {
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.overflow {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-surface-2);
+  border: 1.5px solid var(--border);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface-2);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendToday {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Error ── */
+.error {
+  background: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+/* ── Popover ── */
+.popoverBackdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.popover {
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 380px;
+  overflow: hidden;
+}
+
+.popoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.popoverTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.popoverClose {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.popoverClose:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.popoverList {
+  display: flex;
+  flex-direction: column;
+}
+
+.popoverRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.popoverRow:last-child { border-bottom: none; }
+.popoverRow:hover { background: var(--bg-surface-2); }
+
+.popoverInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.popoverName {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.popoverMeta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.popoverArrow {
+  font-size: 1.2rem;
+  color: var(--text-hint);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .cell       { min-height: 54px; padding: 4px; }
+  .monthLabel { min-width: 140px; font-size: 0.95rem; }
+  .dayHeader  { font-size: 0.65rem; padding: 0.4rem 0; }
+  .dateNum    { font-size: 0.72rem; }
+  .avatarWrap { display: none; } /* Hide avatars on tiny screens, keep border indicator */
+}

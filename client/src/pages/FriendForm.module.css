@@ -1,0 +1,176 @@
+/* FriendForm.module.css */
+
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* ── Photo section ── */
+.photoSection {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.uploadBtn {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background 0.15s;
+}
+
+.uploadBtn:hover { background: var(--accent-lighter); }
+
+.removePhotoBtn {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.removePhotoBtn:hover { background: var(--danger-light); }
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--text-hint);
+  margin: 4px 0 0;
+}
+
+/* ── Field grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.field input,
+.field select,
+.field textarea {
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s, background 0.2s, color 0.2s;
+  font-family: inherit;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+}
+
+/* Dark mode: fix browser autofill/date picker colours */
+.field input::-webkit-calendar-picker-indicator {
+  filter: invert(var(--invert-icon, 0));
+}
+
+[data-theme='dark'] .field input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.inputError {
+  border-color: var(--danger) !important;
+}
+
+.error {
+  font-size: 0.75rem;
+  color: var(--danger);
+  margin-top: 2px;
+}
+
+.charCount {
+  font-size: 0.72rem;
+  color: var(--text-hint);
+  text-align: right;
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.cancelBtn {
+  padding: 0.55rem 1.25rem;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cancelBtn:hover { background: var(--bg-surface-2); }
+
+.submitBtn {
+  padding: 0.55rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.submitBtn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .form { padding: 1.25rem; }
+}

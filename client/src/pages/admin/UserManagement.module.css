@@ -1,0 +1,171 @@
+/* UserManagement.module.css */
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.createBtn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.createBtn:hover { background: var(--accent-hover); }
+
+/* ── Table ── */
+.tableWrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface-2);
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--bg-surface-2); }
+.meRow td { background: var(--accent-light) !important; }
+
+.username { font-weight: 600; }
+
+.youBadge {
+  margin-left: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.meta { color: var(--text-muted); font-size: 0.8rem; }
+.empty { color: var(--text-hint); }
+
+.roleSelect {
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.82rem;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── Row actions ── */
+.actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.actionBtn {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.actionBtn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+.actionBtn.danger:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+
+/* ── Modals ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: var(--modal-overlay);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300; padding: 1rem;
+}
+
+.modal {
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%; max-width: 420px;
+}
+
+.modal h2 { font-size: 1.1rem; color: var(--text-primary); margin: 0 0 1.25rem; }
+.modal h2 em { color: var(--accent); font-style: normal; }
+.modal p  { font-size: 0.875rem; color: var(--text-muted); margin: 0 0 1.25rem; }
+
+.fields { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.5rem; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.field input,
+.field select {
+  border: 1px solid var(--border-input);
+  border-radius: 8px; padding: 0.5rem 0.75rem;
+  font-size: 0.9rem; background: var(--bg-surface);
+  color: var(--text-primary); font-family: inherit;
+  outline: none;
+}
+.field input:focus,
+.field select:focus { border-color: var(--accent); }
+
+.modalActions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+.cancelBtn {
+  padding: 0.5rem 1.1rem; border: 1px solid var(--border-input);
+  border-radius: 8px; background: var(--bg-surface);
+  color: var(--text-primary); font-size: 0.875rem;
+  cursor: pointer; font-family: inherit;
+}
+.cancelBtn:hover { background: var(--bg-surface-2); }
+
+.confirmBtn {
+  padding: 0.5rem 1.1rem; border: none;
+  border-radius: 8px; background: var(--accent);
+  color: #fff; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.confirmBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.confirmBtn.danger { background: var(--danger); }
+.confirmBtn.danger:hover:not(:disabled) { filter: brightness(0.9); }
+.confirmBtn:disabled { opacity: 0.65; cursor: not-allowed; }
