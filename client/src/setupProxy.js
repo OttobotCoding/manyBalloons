@@ -3,6 +3,15 @@
  * Configures the dev server proxy to forward API and upload requests
  * to the Express backend. This file is automatically picked up by
  * react-scripts - no import needed.
+ *
+ * NOTE: this file MUST stay plain JavaScript (not .ts). react-scripts
+ * loads it via a hardcoded `fs.existsSync(resolveApp('src/setupProxy.js'))`
+ * check in its own dev-server bootstrap script (config/webpackDevServer.config.js),
+ * completely outside webpack's TypeScript-aware module resolution. A
+ * setupProxy.ts is silently never picked up — no error, no warning — which
+ * means /api requests never get proxied to the Express backend and the app
+ * gets 404s from the CRA dev server itself instead. This is a documented,
+ * hard constraint of react-scripts, not a project convention we can change.
  */
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
