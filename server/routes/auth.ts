@@ -7,7 +7,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import ActivityLog from '../models/ActivityLog';
+import Settings from '../models/Settings';
 import requireAuth from '../middleware/requireAuth';
+import { sendPendingApprovalEmail } from '../services/emailService';
 
 const router = express.Router();
 
@@ -83,14 +85,17 @@ router.post('/setup', async (req: Request, res: Response, next: NextFunction) =>
 // must wait for an admin to approve them before they can log in.
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password, confirmPassword, displayName } = req.body as {
+    const { username, password, confirmPassword, displayName, email } = req.body as {
       username?: string;
       password?: string;
       confirmPassword?: string;
       displayName?: string;
+      email?: string;
     };
     if (!username || !password)
       return res.status(422).json({ success: false, message: 'Username and password are required' });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(422).json({ success: false, message: 'A valid email address is required' });
     if (password !== confirmPassword)
       return res.status(422).json({ success: false, message: 'Passwords do not match' });
     if (password.length < 8)
@@ -100,7 +105,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     if (existing)
       return res.status(409).json({ success: false, message: 'Username already taken' });
 
-    const user = await User.create({ username, password, displayName, status: 'pending' });
+    const user = await User.create({ username, password, displayName, email, status: 'pending' });
 
     await ActivityLog.log({
       user:        user._id,
@@ -109,6 +114,39 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       description: `"${user.username}" self-registered — awaiting admin approval`,
       ip:          getIp(req),
     });
+
+    // Let the user know by email that their account needs admin approval.
+    // This never blocks the registration response — a delivery failure is
+    // logged but the account still exists and the HTTP response still
+    // succeeds either way.
+    const settings = await Settings.findById('app');
+    if (settings?.smtpUser && settings?.smtpPass) {
+      try {
+        await sendPendingApprovalEmail(settings, {
+          username:    user.username,
+          email:       user.email,
+          displayName: user.displayName,
+        });
+        await ActivityLog.log({
+          user:        user._id,
+          username:    user.username,
+          action:      'notification_sent',
+          description: `Pending-approval email sent to "${user.username}" <${user.email}>`,
+          ip:          getIp(req),
+        });
+      } catch (err) {
+        console.error('❌  Pending-approval email error:', (err as Error).message);
+        await ActivityLog.log({
+          user:        user._id,
+          username:    user.username,
+          action:      'notification_failed',
+          description: `Failed to send pending-approval email to "${user.username}": ${(err as Error).message}`,
+          ip:          getIp(req),
+        });
+      }
+    } else {
+      console.log('   SMTP not configured — skipping pending-approval email.');
+    }
 
     res.status(201).json({
       success: true,

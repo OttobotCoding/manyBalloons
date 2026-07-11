@@ -1,7 +1,7 @@
 /**
  * server/services/emailService.ts
- * Nodemailer-based email sending for birthday notifications.
- * Called by the scheduler and the test endpoint.
+ * Nodemailer-based email sending for birthday and account notifications.
+ * Called by the scheduler, the test endpoint, and the auth routes.
  */
 
 import nodemailer, { Transporter } from 'nodemailer';
@@ -15,6 +15,13 @@ export interface FriendNotification {
   age: number | null;
   daysUntilBirthday: number | null;
   [key: string]: unknown;
+}
+
+// The subset of a user record needed to notify them about their account.
+export interface PendingUserNotification {
+  username: string;
+  email: string;
+  displayName?: string;
 }
 
 /**
@@ -130,6 +137,79 @@ export async function sendBirthdayEmail(settings: ISettings, friends: FriendNoti
   });
 
   console.log(`✉️  Birthday email sent to ${settings.notificationEmail} for: ${friends.map(f => f.name).join(', ')}`);
+}
+
+/**
+ * Build the HTML email body sent to a newly self-registered user, letting
+ * them know their account is awaiting admin approval.
+ */
+function buildPendingApprovalHtml(user: PendingUserNotification): string {
+  const name = user.displayName || user.username;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"/></head>
+    <body style="margin:0;padding:0;background:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      <div style="max-width:560px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(90deg,#6c47ff,#a37bff);padding:24px 32px;">
+          <h1 style="margin:0;color:#fff;font-size:22px;">🎈 Many Balloons</h1>
+          <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">
+            Account registration received
+          </p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:24px 32px;">
+          <p style="margin:0 0 16px;font-size:16px;color:#1a1a2e;">
+            Hi ${name},
+          </p>
+          <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.5;">
+            Thanks for signing up for <strong>Many Balloons</strong>. Your account
+            (<strong>${user.username}</strong>) has been created and is currently
+          </p>
+          <p style="margin:0 0 20px;text-align:center;">
+            <span style="
+              display:inline-block;background:#fff3e0;color:#e65100;
+              padding:6px 16px;border-radius:999px;font-size:14px;font-weight:600;
+            ">🕒 Awaiting admin approval</span>
+          </p>
+          <p style="margin:0;font-size:15px;color:#333;line-height:1.5;">
+            You won't be able to sign in until an administrator reviews and approves
+            your account. No action is needed from you — we'll send a follow-up
+            once a decision has been made.
+          </p>
+          <p style="margin:20px 0 0;font-size:13px;color:#aaa;text-align:center;">
+            Sent by Many Balloons · You're receiving this because you registered an account
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Notify a newly self-registered user that their account is pending
+ * admin approval. Called from POST /api/auth/register right after the
+ * user document is created with status 'pending'.
+ */
+export async function sendPendingApprovalEmail(settings: ISettings, user: PendingUserNotification): Promise<void> {
+  if (!user.email) return;
+
+  const transporter = createTransporter(settings);
+  const from = settings.smtpFrom || settings.smtpUser;
+
+  await transporter.sendMail({
+    from: `"Many Balloons" <${from}>`,
+    to: user.email,
+    subject: '🎈 Your Many Balloons account is pending approval',
+    html: buildPendingApprovalHtml(user),
+  });
+
+  console.log(`✉️  Pending-approval email sent to ${user.email} for "${user.username}"`);
 }
 
 /**

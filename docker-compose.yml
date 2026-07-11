@@ -23,8 +23,15 @@ services:
       PORT: 5000
       MONGO_URI: mongodb://mongo:27017/many_balloons
       NODE_ENV: production
+      # Generate your own with: openssl rand -hex 32
+      JWT_SECRET: CHANGE_ME_TO_A_RANDOM_SECRET
+      # Origin the browser connects from. Only matters if you access the app
+      # from a different host/port than the container serves — same-origin
+      # setups (typical) can leave this as-is.
+      CLIENT_ORIGIN: http://localhost:5000
+      TZ: America/Denver
     volumes:
-      - /mnt/user/appdata/birthday-tracker/uploads:/app/server/dist/uploads
+      - /mnt/user/appdata/birthday-tracker/uploads
     ports:
       - "5000:5000"
     depends_on:

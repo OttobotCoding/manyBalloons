@@ -43,7 +43,7 @@ export const checkSetupNeeded = (): Promise<SetupStatusResponse> =>
 export const setupAccount = (p: { username: string; password: string; confirmPassword: string }): Promise<ApiSuccess<User>> =>
   unwrap(api.post('/auth/setup', p));
 
-export const registerAccount = (p: { username: string; password: string; confirmPassword: string; displayName?: string }): Promise<MessageResponse> =>
+export const registerAccount = (p: { username: string; password: string; confirmPassword: string; email: string; displayName?: string }): Promise<MessageResponse> =>
   unwrap(api.post('/auth/register', p));
 
 export const loginUser = (p: { username: string; password: string; rememberMe: boolean }): Promise<ApiSuccess<User>> =>
