@@ -17,11 +17,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: birthday-tracker-app
+    container_name: many-balloons-app
     restart: unless-stopped
     environment:
       PORT: 5000
-      MONGO_URI: mongodb://mongo:27017/birthday_tracker
+      MONGO_URI: mongodb://mongo:27017/many_balloons
       NODE_ENV: production
       # Generate your own with: openssl rand -hex 32
       JWT_SECRET: CHANGE_ME_TO_A_RANDOM_SECRET
