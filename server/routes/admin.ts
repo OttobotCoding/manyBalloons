@@ -6,13 +6,14 @@
  * GET  /api/admin/users          → list all users
  * POST /api/admin/users          → create a new user
  * PUT  /api/admin/users/:id/role → change a user's role
+ * PUT  /api/admin/users/:id/status → approve or reject a pending user
  * PUT  /api/admin/users/:id/password → reset a user's password
  * DELETE /api/admin/users/:id    → delete a user
  * GET  /api/admin/logs           → activity log (paginated)
  */
 
 import express, { Request, Response, NextFunction } from 'express';
-import User, { UserRole } from '../models/User';
+import User, { UserRole, UserStatus } from '../models/User';
 import Friend from '../models/Friend';
 import Group from '../models/Group';
 import Settings from '../models/Settings';
@@ -150,6 +151,36 @@ router.put('/users/:id/role', async (req: Request, res: Response, next: NextFunc
       action:      'user_role_changed',
       description: `Role for "${user.username}" changed from "${oldRole}" to "${role}"`,
       meta:        { targetUserId: user._id, targetUsername: user.username, oldRole, newRole: role },
+      ip:          getIp(req),
+    });
+
+    res.json({ success: true, data: user.toJSON() });
+  } catch (err) { next(err); }
+});
+
+// ── PUT /api/admin/users/:id/status ───────────────────────────────────────────
+// Approves or rejects a self-registered account. Only meaningful for
+// currently-'pending' users, but not restricted to them — an admin can also
+// re-approve a previously-rejected account.
+router.put('/users/:id/status', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status } = req.body as { status?: UserStatus };
+    if (!status || !['approved', 'rejected'].includes(status))
+      return res.status(422).json({ success: false, message: 'Status must be "approved" or "rejected"' });
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const oldStatus = user.status;
+    user.status = status;
+    await user.save({ validateBeforeSave: false });
+
+    await ActivityLog.log({
+      user:        req.userId,
+      username:    req.user?.username,
+      action:      status === 'approved' ? 'user_approved' : 'user_rejected',
+      description: `Admin ${status} account "${user.username}" (was "${oldStatus}")`,
+      meta:        { targetUserId: user._id, targetUsername: user.username, oldStatus, newStatus: status },
       ip:          getIp(req),
     });
 

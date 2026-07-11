@@ -13,6 +13,7 @@ export type ActivityAction =
   | 'logout'
   | 'password_changed'
   | 'setup_completed'
+  | 'login_blocked_unapproved'
   // Friends
   | 'friend_created'
   | 'friend_updated'
@@ -22,6 +23,9 @@ export type ActivityAction =
   | 'user_deleted'
   | 'user_role_changed'
   | 'user_password_reset'
+  | 'user_registered'
+  | 'user_approved'
+  | 'user_rejected'
   // Groups
   | 'group_created'
   | 'group_updated'
@@ -88,6 +92,7 @@ const ActivityLogSchema = new Schema<IActivityLog, IActivityLogModel>(
         'logout',
         'password_changed',
         'setup_completed',
+        'login_blocked_unapproved',
         // Friends
         'friend_created',
         'friend_updated',
@@ -97,6 +102,9 @@ const ActivityLogSchema = new Schema<IActivityLog, IActivityLogModel>(
         'user_deleted',
         'user_role_changed',
         'user_password_reset',
+        'user_registered',
+        'user_approved',
+        'user_rejected',
         // Groups
         'group_created',
         'group_updated',

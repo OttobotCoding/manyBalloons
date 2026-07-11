@@ -8,11 +8,13 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export type UserRole = 'admin' | 'user';
+export type UserStatus = 'pending' | 'approved' | 'rejected';
 
 export interface IUser extends Document {
   username: string;
   password: string;
   role: UserRole;
+  status: UserStatus;
   lastLogin: Date | null;
   displayName: string;
   createdAt: Date;
@@ -41,6 +43,13 @@ const UserSchema = new Schema<IUser>(
       type:    String,
       enum:    ['admin', 'user'],
       default: 'user',
+    },
+    // 'pending' only for self-registered accounts awaiting admin review —
+    // accounts created via setup or by an admin default straight to 'approved'.
+    status: {
+      type:    String,
+      enum:    ['pending', 'approved', 'rejected'],
+      default: 'approved',
     },
     lastLogin: {
       type:    Date,

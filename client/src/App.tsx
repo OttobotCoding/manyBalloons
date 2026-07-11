@@ -21,6 +21,7 @@ import CalendarView  from './pages/CalendarView';
 import UpcomingList  from './pages/UpcomingList';
 import Settings      from './pages/Settings';
 import Login         from './pages/Login';
+import Register      from './pages/Register';
 import Spinner       from './components/Spinner';
 
 // Admin pages
@@ -91,7 +92,8 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+      <Route path="/login"    element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+      <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
 
       {/* Protected — main app */}
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
