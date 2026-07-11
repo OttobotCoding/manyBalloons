@@ -1,8 +1,9 @@
 /**
  * client/src/pages/Register.tsx
  * Self-signup form. Creates an account with status 'pending' — the user is
- * told an admin needs to approve them before they can sign in, and is sent
- * back to the login screen (no session is created on registration).
+ * told an admin needs to approve them before they can sign in, is emailed a
+ * pending-approval notice, and is sent back to the login screen (no session
+ * is created on registration).
  */
 
 import { useState, ChangeEvent, FormEvent } from 'react';
@@ -13,6 +14,7 @@ import styles from './Login.module.css';
 
 interface RegisterForm {
   username: string;
+  email: string;
   password: string;
   confirmPassword: string;
   displayName: string;
@@ -22,6 +24,7 @@ type RegisterFormErrors = Partial<Record<keyof RegisterForm, string>>;
 
 const EMPTY_FORM: RegisterForm = {
   username:        '',
+  email:           '',
   password:        '',
   confirmPassword: '',
   displayName:     '',
@@ -44,6 +47,11 @@ export default function Register() {
   const validate = (): RegisterFormErrors => {
     const errs: RegisterFormErrors = {};
     if (!form.username.trim()) errs.username = 'Username is required';
+    if (!form.email.trim()) {
+      errs.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      errs.email = 'Enter a valid email address';
+    }
     if (!form.password) {
       errs.password = 'Password is required';
     } else if (form.password.length < 8) {
@@ -62,6 +70,7 @@ export default function Register() {
     try {
       const res = await registerAccount({
         username:        form.username,
+        email:           form.email,
         password:        form.password,
         confirmPassword: form.confirmPassword,
         displayName:     form.displayName || undefined,
@@ -104,6 +113,25 @@ export default function Register() {
               className={errors.username ? styles.inputError : ''}
             />
             {errors.username && <span className={styles.error}>{errors.username}</span>}
+          </div>
+
+          {/* Email */}
+          <div className={styles.field}>
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              className={errors.email ? styles.inputError : ''}
+            />
+            {errors.email && <span className={styles.error}>{errors.email}</span>}
+            <span style={{ fontSize: '0.75rem', color: '#888' }}>
+              We'll email you to confirm your account is pending approval.
+            </span>
           </div>
 
           {/* Display name */}
