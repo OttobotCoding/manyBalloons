@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+client/node_modules
+server/node_modules
+
+# Build output
+client/build/
+server/dist/
+
+# Environment variables - never commit these
+server/.env
+.env
+
+# Uploaded photos
+server/uploads/*
+!server/uploads/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { checkSetupNeeded, setupAccount } from '../services/api';
@@ -235,6 +235,12 @@ export default function Login() {
               : (isSetup ? 'Create account'    : 'Sign in')}
           </button>
         </form>
+
+        {!isSetup && (
+          <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem' }}>
+            Need an account? <Link to="/register">Register</Link>
+          </p>
+        )}
       </div>
     </div>
   );

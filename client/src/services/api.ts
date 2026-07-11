@@ -6,7 +6,7 @@
 import axios, { AxiosResponse } from 'axios';
 import {
   ApiSuccess, SetupStatusResponse, MessageResponse,
-  User, Friend, Group, Settings, ActivityLogEntry, AdminStats,
+  User, Friend, Group, Settings, ActivityLogEntry, AdminStats, UserStatus,
 } from '../types';
 
 const api = axios.create({
@@ -42,6 +42,9 @@ export const checkSetupNeeded = (): Promise<SetupStatusResponse> =>
 
 export const setupAccount = (p: { username: string; password: string; confirmPassword: string }): Promise<ApiSuccess<User>> =>
   unwrap(api.post('/auth/setup', p));
+
+export const registerAccount = (p: { username: string; password: string; confirmPassword: string; displayName?: string }): Promise<MessageResponse> =>
+  unwrap(api.post('/auth/register', p));
 
 export const loginUser = (p: { username: string; password: string; rememberMe: boolean }): Promise<ApiSuccess<User>> =>
   unwrap(api.post('/auth/login', p));
@@ -143,6 +146,9 @@ export const createAdminUser = (p: CreateUserInput): Promise<ApiSuccess<User>> =
 
 export const updateUserRole = (id: string, role: 'admin' | 'user'): Promise<ApiSuccess<User>> =>
   unwrap(api.put(`/admin/users/${id}/role`, { role }));
+
+export const updateUserStatus = (id: string, status: UserStatus): Promise<ApiSuccess<User>> =>
+  unwrap(api.put(`/admin/users/${id}/status`, { status }));
 
 export const resetUserPassword = (id: string, p: { newPassword: string }): Promise<MessageResponse> =>
   unwrap(api.put(`/admin/users/${id}/password`, p));

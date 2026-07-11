@@ -8,12 +8,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import {
-  getAdminUsers, createAdminUser, updateUserRole,
+  getAdminUsers, createAdminUser, updateUserRole, updateUserStatus,
   resetUserPassword, deleteAdminUser, CreateUserInput,
 } from '../../services/api';
 import Spinner from '../../components/Spinner';
 import styles  from './UserManagement.module.css';
-import { User, UserRole } from '../../types';
+import { User, UserRole, UserStatus } from '../../types';
 
 function formatDate(d: string | null | undefined): string {
   if (!d) return 'Never';
@@ -54,6 +54,12 @@ export default function UserManagement() {
     onError:   (e: Error) => toast.error(e.message),
   });
 
+  const { mutate: doStatusChange } = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: UserStatus }) => updateUserStatus(id, status),
+    onSuccess: (_res, { status }) => { toast.success(status === 'approved' ? 'User approved' : 'User rejected'); invalidate(); },
+    onError:   (e: Error) => toast.error(e.message),
+  });
+
   const { mutate: doResetPassword, isPending: isResetting } = useMutation({
     mutationFn: ({ id, password }: { id: string; password: string }) => resetUserPassword(id, { newPassword: password }),
     onSuccess: () => { toast.success('Password reset'); setResetTarget(null); setNewPass(''); invalidate(); },
@@ -88,6 +94,7 @@ export default function UserManagement() {
                 <th>Username</th>
                 <th>Display name</th>
                 <th>Role</th>
+                <th>Status</th>
                 <th>Last login</th>
                 <th>Created</th>
                 <th>Actions</th>
@@ -112,10 +119,37 @@ export default function UserManagement() {
                       <option value="admin">admin</option>
                     </select>
                   </td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${styles[u.status]}`}>{u.status}</span>
+                  </td>
                   <td className={styles.meta}>{formatDate(u.lastLogin)}</td>
                   <td className={styles.meta}>{formatDate(u.createdAt)}</td>
                   <td>
                     <div className={styles.actions}>
+                      {u.status === 'pending' && (
+                        <>
+                          <button
+                            className={styles.actionBtn}
+                            onClick={() => doStatusChange({ id: u._id, status: 'approved' })}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className={`${styles.actionBtn} ${styles.danger}`}
+                            onClick={() => doStatusChange({ id: u._id, status: 'rejected' })}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      {u.status === 'rejected' && (
+                        <button
+                          className={styles.actionBtn}
+                          onClick={() => doStatusChange({ id: u._id, status: 'approved' })}
+                        >
+                          Approve
+                        </button>
+                      )}
                       <button
                         className={styles.actionBtn}
                         onClick={() => { setResetTarget(u); setNewPass(''); }}

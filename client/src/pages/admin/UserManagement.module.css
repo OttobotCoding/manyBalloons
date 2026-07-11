@@ -84,6 +84,19 @@
 .meta { color: var(--text-muted); font-size: 0.8rem; }
 .empty { color: var(--text-hint); }
 
+.statusBadge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.statusBadge.approved { background: var(--accent-light); color: var(--accent); }
+.statusBadge.pending  { background: var(--warning-light); color: var(--warning-text); }
+.statusBadge.rejected { background: var(--danger-light); color: var(--danger); }
+
 .roleSelect {
   border: 1px solid var(--border-input);
   border-radius: 6px;

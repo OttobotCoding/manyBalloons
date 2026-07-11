@@ -7,6 +7,7 @@
 
 export type Relationship = 'friend' | 'family' | 'colleague' | 'acquaintance' | 'other';
 export type UserRole = 'admin' | 'user';
+export type UserStatus = 'pending' | 'approved' | 'rejected';
 
 export interface UserSummary {
   _id: string;
@@ -18,6 +19,7 @@ export interface User {
   _id: string;
   username: string;
   role: UserRole;
+  status: UserStatus;
   lastLogin: string | null;
   displayName: string;
   createdAt: string;
@@ -75,6 +77,7 @@ export type ActivityAction =
   | 'logout'
   | 'password_changed'
   | 'setup_completed'
+  | 'login_blocked_unapproved'
   | 'friend_created'
   | 'friend_updated'
   | 'friend_deleted'
@@ -82,6 +85,9 @@ export type ActivityAction =
   | 'user_deleted'
   | 'user_role_changed'
   | 'user_password_reset'
+  | 'user_registered'
+  | 'user_approved'
+  | 'user_rejected'
   | 'group_created'
   | 'group_updated'
   | 'group_deleted'

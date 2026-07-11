@@ -19,7 +19,8 @@ import friendRoutes   from './routes/friends';
 import settingsRoutes from './routes/settings';
 import adminRoutes    from './routes/admin';
 import groupRoutes    from './routes/groups';
-import requireAuth    from './middleware/requireAuth';
+import requireAuth     from './middleware/requireAuth';
+import requireApproved from './middleware/requireApproved';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import { startScheduler } from './services/scheduler';
 
@@ -46,9 +47,11 @@ app.use('/api/auth', authRoutes);
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 
 // ── Protected routes (JWT required) ──────────────────────────────────────────
-app.use('/api/friends',  requireAuth, friendRoutes);
-app.use('/api/settings', requireAuth, settingsRoutes);
-app.use('/api/groups',   requireAuth, groupRoutes);
+// requireApproved is skipped for /api/admin — admin accounts always come from
+// setup or admin-created users, both of which default to 'approved'.
+app.use('/api/friends',  requireAuth, requireApproved, friendRoutes);
+app.use('/api/settings', requireAuth, requireApproved, settingsRoutes);
+app.use('/api/groups',   requireAuth, requireApproved, groupRoutes);
 app.use('/api/admin',    requireAuth, adminRoutes);
 
 // ── Serve React build ─────────────────────────────────────────────────────────

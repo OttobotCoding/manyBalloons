@@ -78,6 +78,45 @@ router.post('/setup', async (req: Request, res: Response, next: NextFunction) =>
   } catch (err) { next(err); }
 });
 
+// ── POST /api/auth/register ───────────────────────────────────────────────────
+// Self-signup. Creates a 'pending' account — no session is issued, the user
+// must wait for an admin to approve them before they can log in.
+router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { username, password, confirmPassword, displayName } = req.body as {
+      username?: string;
+      password?: string;
+      confirmPassword?: string;
+      displayName?: string;
+    };
+    if (!username || !password)
+      return res.status(422).json({ success: false, message: 'Username and password are required' });
+    if (password !== confirmPassword)
+      return res.status(422).json({ success: false, message: 'Passwords do not match' });
+    if (password.length < 8)
+      return res.status(422).json({ success: false, message: 'Password must be at least 8 characters' });
+
+    const existing = await User.findOne({ username: username.toLowerCase().trim() });
+    if (existing)
+      return res.status(409).json({ success: false, message: 'Username already taken' });
+
+    const user = await User.create({ username, password, displayName, status: 'pending' });
+
+    await ActivityLog.log({
+      user:        user._id,
+      username:    user.username,
+      action:      'user_registered',
+      description: `"${user.username}" self-registered — awaiting admin approval`,
+      ip:          getIp(req),
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Registration received — an admin will review your account shortly',
+    });
+  } catch (err) { next(err); }
+});
+
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   console.log('[login] body:', req.body);
@@ -112,6 +151,20 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
         ip:          getIp(req),
       });
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
+    }
+
+    if (user.status !== 'approved') {
+      const message = user.status === 'pending'
+        ? 'Your account is awaiting admin approval'
+        : 'Your account request was rejected. Contact an administrator for details.';
+      await ActivityLog.log({
+        user:        user._id,
+        username:    user.username,
+        action:      'login_blocked_unapproved',
+        description: `Login blocked for "${user.username}" — status is "${user.status}"`,
+        ip:          getIp(req),
+      });
+      return res.status(403).json({ success: false, message });
     }
 
     // Update last login timestamp
