@@ -24,6 +24,9 @@ export interface PendingUserNotification {
   displayName?: string;
 }
 
+// The outcome of an admin's review of a pending account.
+export type AccountDecision = 'approved' | 'rejected';
+
 /**
  * Build a Nodemailer transporter from the saved settings document.
  */
@@ -210,6 +213,160 @@ export async function sendPendingApprovalEmail(settings: ISettings, user: Pendin
   });
 
   console.log(`✉️  Pending-approval email sent to ${user.email} for "${user.username}"`);
+}
+
+/**
+ * Build the HTML email body that alerts admins to a newly self-registered
+ * account waiting on their review.
+ */
+function buildAdminSignupAlertHtml(newUser: PendingUserNotification): string {
+  const name = newUser.displayName || newUser.username;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"/></head>
+    <body style="margin:0;padding:0;background:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      <div style="max-width:560px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(90deg,#6c47ff,#a37bff);padding:24px 32px;">
+          <h1 style="margin:0;color:#fff;font-size:22px;">🎈 Many Balloons</h1>
+          <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">
+            New account awaiting your review
+          </p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:24px 32px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#333;line-height:1.5;">
+            Someone just requested an account on your Many Balloons instance:
+          </p>
+          <table style="width:100%;border-collapse:collapse;margin:0 0 20px;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+            <tr>
+              <td style="padding:10px 16px;background:#f8f9fa;color:#666;font-size:13px;width:120px;">Username</td>
+              <td style="padding:10px 16px;font-size:14px;color:#1a1a2e;font-weight:600;">${newUser.username}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;background:#f8f9fa;color:#666;font-size:13px;">Display name</td>
+              <td style="padding:10px 16px;font-size:14px;color:#1a1a2e;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;background:#f8f9fa;color:#666;font-size:13px;">Email</td>
+              <td style="padding:10px 16px;font-size:14px;color:#1a1a2e;">${newUser.email}</td>
+            </tr>
+          </table>
+          <p style="margin:0;font-size:15px;color:#333;line-height:1.5;">
+            Log in and open <strong>Admin → Users</strong> to approve or reject this
+            request — they can't sign in until you do.
+          </p>
+          <p style="margin:20px 0 0;font-size:13px;color:#aaa;text-align:center;">
+            Sent by Many Balloons · You're receiving this because your account has admin access
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Notify all admins with an email on file that a new self-registered
+ * account is waiting for review. Called from POST /api/auth/register
+ * alongside sendPendingApprovalEmail — one email to the new user, one to
+ * the admins. Failure here never blocks registration.
+ */
+export async function sendAdminSignupAlert(settings: ISettings, adminEmails: string[], newUser: PendingUserNotification): Promise<void> {
+  if (!adminEmails.length) return;
+
+  const transporter = createTransporter(settings);
+  const from = settings.smtpFrom || settings.smtpUser;
+
+  await transporter.sendMail({
+    from: `"Many Balloons" <${from}>`,
+    to: adminEmails.join(', '),
+    subject: `🎈 New account pending approval: ${newUser.username}`,
+    html: buildAdminSignupAlertHtml(newUser),
+  });
+
+  console.log(`✉️  Admin signup alert sent to ${adminEmails.join(', ')} for new user "${newUser.username}"`);
+}
+
+/**
+ * Build the HTML email body sent to a user once an admin has approved or
+ * rejected their account request.
+ */
+function buildAccountDecisionHtml(user: PendingUserNotification, decision: AccountDecision): string {
+  const name = user.displayName || user.username;
+  const isApproved = decision === 'approved';
+
+  const badge = isApproved
+    ? `<span style="display:inline-block;background:#e8f8ef;color:#1e7e45;padding:6px 16px;border-radius:999px;font-size:14px;font-weight:600;">✅ Account approved</span>`
+    : `<span style="display:inline-block;background:#fdecea;color:#c0392b;padding:6px 16px;border-radius:999px;font-size:14px;font-weight:600;">⛔ Account not approved</span>`;
+
+  const message = isApproved
+    ? `Good news — your account (<strong>${user.username}</strong>) has been approved. You can now sign in with the username and password you registered with.`
+    : `Your account request (<strong>${user.username}</strong>) was not approved. Contact an administrator if you believe this was a mistake or would like more details.`;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"/></head>
+    <body style="margin:0;padding:0;background:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      <div style="max-width:560px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(90deg,#6c47ff,#a37bff);padding:24px 32px;">
+          <h1 style="margin:0;color:#fff;font-size:22px;">🎈 Many Balloons</h1>
+          <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">
+            An update on your account request
+          </p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:24px 32px;">
+          <p style="margin:0 0 16px;font-size:16px;color:#1a1a2e;">
+            Hi ${name},
+          </p>
+          <p style="margin:0 0 20px;text-align:center;">
+            ${badge}
+          </p>
+          <p style="margin:0;font-size:15px;color:#333;line-height:1.5;">
+            ${message}
+          </p>
+          <p style="margin:20px 0 0;font-size:13px;color:#aaa;text-align:center;">
+            Sent by Many Balloons · You're receiving this because you registered an account
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Notify a user that an admin has approved or rejected their account.
+ * Called from PUT /api/admin/users/:id/status right after the status
+ * change is saved. Failure here never blocks the status change itself.
+ */
+export async function sendAccountDecisionEmail(settings: ISettings, user: PendingUserNotification, decision: AccountDecision): Promise<void> {
+  if (!user.email) return;
+
+  const transporter = createTransporter(settings);
+  const from = settings.smtpFrom || settings.smtpUser;
+
+  const subject = decision === 'approved'
+    ? '🎈 Your Many Balloons account has been approved'
+    : 'Your Many Balloons account request was not approved';
+
+  await transporter.sendMail({
+    from: `"Many Balloons" <${from}>`,
+    to: user.email,
+    subject,
+    html: buildAccountDecisionHtml(user, decision),
+  });
+
+  console.log(`✉️  Account ${decision} email sent to ${user.email} for "${user.username}"`);
 }
 
 /**

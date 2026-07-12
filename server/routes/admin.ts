@@ -7,6 +7,7 @@
  * POST /api/admin/users          → create a new user
  * PUT  /api/admin/users/:id/role → change a user's role
  * PUT  /api/admin/users/:id/status → approve or reject a pending user
+ * PUT  /api/admin/users/:id/email → update a user's notification email
  * PUT  /api/admin/users/:id/password → reset a user's password
  * DELETE /api/admin/users/:id    → delete a user
  * GET  /api/admin/logs           → activity log (paginated)
@@ -19,6 +20,7 @@ import Group from '../models/Group';
 import Settings from '../models/Settings';
 import ActivityLog from '../models/ActivityLog';
 import requireAdmin from '../middleware/requireAdmin';
+import { sendAccountDecisionEmail, AccountDecision } from '../services/emailService';
 
 const router = express.Router();
 
@@ -96,23 +98,26 @@ router.get('/users', async (req: Request, res: Response, next: NextFunction) => 
 // ── POST /api/admin/users ─────────────────────────────────────────────────────
 router.post('/users', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password, role = 'user', displayName } = req.body as {
+    const { username, password, role = 'user', displayName, email } = req.body as {
       username?: string;
       password?: string;
       role?: UserRole;
       displayName?: string;
+      email?: string;
     };
 
     if (!username || !password)
       return res.status(422).json({ success: false, message: 'Username and password are required' });
     if (password.length < 8)
       return res.status(422).json({ success: false, message: 'Password must be at least 8 characters' });
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(422).json({ success: false, message: 'Enter a valid email address' });
 
     const existing = await User.findOne({ username: username.toLowerCase().trim() });
     if (existing)
       return res.status(409).json({ success: false, message: 'Username already taken' });
 
-    const user = await User.create({ username, password, role, displayName });
+    const user = await User.create({ username, password, role, displayName, email });
 
     await ActivityLog.log({
       user:        req.userId,
@@ -158,6 +163,36 @@ router.put('/users/:id/role', async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// ── PUT /api/admin/users/:id/email ────────────────────────────────────────────
+// Sets or updates a user's notification email — e.g. for an admin account
+// created via /setup (which doesn't collect one) that needs one on file to
+// receive new-signup alerts.
+router.put('/users/:id/email', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body as { email?: string };
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(422).json({ success: false, message: 'Enter a valid email address' });
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const oldEmail = user.email;
+    user.email = email || '';
+    await user.save({ validateBeforeSave: false });
+
+    await ActivityLog.log({
+      user:        req.userId,
+      username:    req.user?.username,
+      action:      'user_email_updated',
+      description: `Email for "${user.username}" changed from "${oldEmail || '(none)'}" to "${user.email || '(none)'}"`,
+      meta:        { targetUserId: user._id, targetUsername: user.username, oldEmail, newEmail: user.email },
+      ip:          getIp(req),
+    });
+
+    res.json({ success: true, data: user.toJSON() });
+  } catch (err) { next(err); }
+});
+
 // ── PUT /api/admin/users/:id/status ───────────────────────────────────────────
 // Approves or rejects a self-registered account. Only meaningful for
 // currently-'pending' users, but not restricted to them — an admin can also
@@ -183,6 +218,39 @@ router.put('/users/:id/status', async (req: Request, res: Response, next: NextFu
       meta:        { targetUserId: user._id, targetUsername: user.username, oldStatus, newStatus: status },
       ip:          getIp(req),
     });
+
+    // Let the user know the outcome by email. Never blocks the status
+    // change itself — a delivery failure is logged but the decision stands.
+    const settings = await Settings.findById('app');
+    if (settings?.smtpUser && settings?.smtpPass && user.email) {
+      try {
+        await sendAccountDecisionEmail(settings, {
+          username:    user.username,
+          email:       user.email,
+          displayName: user.displayName,
+        }, status as AccountDecision);
+        await ActivityLog.log({
+          user:        user._id,
+          username:    user.username,
+          action:      'notification_sent',
+          description: `Account-${status} email sent to "${user.username}" <${user.email}>`,
+          ip:          getIp(req),
+        });
+      } catch (err) {
+        console.error('❌  Account decision email error:', (err as Error).message);
+        await ActivityLog.log({
+          user:        user._id,
+          username:    user.username,
+          action:      'notification_failed',
+          description: `Failed to send account-${status} email to "${user.username}": ${(err as Error).message}`,
+          ip:          getIp(req),
+        });
+      }
+    } else if (!user.email) {
+      console.log(`   "${user.username}" has no email on file — skipping account-${status} notification.`);
+    } else {
+      console.log(`   SMTP not configured — skipping account-${status} notification.`);
+    }
 
     res.json({ success: true, data: user.toJSON() });
   } catch (err) { next(err); }

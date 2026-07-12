@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import {
-  getAdminUsers, createAdminUser, updateUserRole, updateUserStatus,
+  getAdminUsers, createAdminUser, updateUserRole, updateUserStatus, updateUserEmail,
   resetUserPassword, deleteAdminUser, CreateUserInput,
 } from '../../services/api';
 import Spinner from '../../components/Spinner';
@@ -23,7 +23,7 @@ function formatDate(d: string | null | undefined): string {
   });
 }
 
-const EMPTY_CREATE_FORM: CreateUserInput = { username: '', password: '', role: 'user', displayName: '' };
+const EMPTY_CREATE_FORM: CreateUserInput = { username: '', password: '', role: 'user', displayName: '', email: '' };
 
 export default function UserManagement() {
   const { user: me } = useAuth();
@@ -32,7 +32,9 @@ export default function UserManagement() {
   const [showCreate,   setShowCreate]   = useState(false);
   const [resetTarget,  setResetTarget]  = useState<User | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [emailTarget,  setEmailTarget]  = useState<User | null>(null);
   const [newPass,      setNewPass]      = useState('');
+  const [newEmail,     setNewEmail]     = useState('');
   const [createForm,   setCreateForm]   = useState<CreateUserInput>(EMPTY_CREATE_FORM);
 
   const { data: res, isLoading } = useQuery({
@@ -66,6 +68,12 @@ export default function UserManagement() {
     onError:   (e: Error) => toast.error(e.message),
   });
 
+  const { mutate: doUpdateEmail, isPending: isUpdatingEmail } = useMutation({
+    mutationFn: ({ id, email }: { id: string; email: string }) => updateUserEmail(id, email),
+    onSuccess: () => { toast.success('Email updated'); setEmailTarget(null); setNewEmail(''); invalidate(); },
+    onError:   (e: Error) => toast.error(e.message),
+  });
+
   const { mutate: doDelete, isPending: isDeleting } = useMutation({
     mutationFn: (id: string) => deleteAdminUser(id),
     onSuccess: () => { toast.success('User deleted'); setDeleteTarget(null); invalidate(); },
@@ -93,6 +101,7 @@ export default function UserManagement() {
               <tr>
                 <th>Username</th>
                 <th>Display name</th>
+                <th>Email</th>
                 <th>Role</th>
                 <th>Status</th>
                 <th>Last login</th>
@@ -108,6 +117,7 @@ export default function UserManagement() {
                     {u._id === me?._id && <span className={styles.youBadge}>you</span>}
                   </td>
                   <td>{u.displayName || <span className={styles.empty}>—</span>}</td>
+                  <td>{u.email || <span className={styles.empty}>—</span>}</td>
                   <td>
                     <select
                       className={styles.roleSelect}
@@ -152,6 +162,12 @@ export default function UserManagement() {
                       )}
                       <button
                         className={styles.actionBtn}
+                        onClick={() => { setEmailTarget(u); setNewEmail(u.email || ''); }}
+                      >
+                        Edit email
+                      </button>
+                      <button
+                        className={styles.actionBtn}
                         onClick={() => { setResetTarget(u); setNewPass(''); }}
                       >
                         Reset password
@@ -191,6 +207,13 @@ export default function UserManagement() {
                 <input
                   type="text" value={createForm.displayName} placeholder="Optional"
                   onChange={e => setCreateForm(f => ({ ...f, displayName: e.target.value }))}
+                />
+              </div>
+              <div className={styles.field}>
+                <label>Email</label>
+                <input
+                  type="email" value={createForm.email} placeholder="Optional — needed to receive notifications"
+                  onChange={e => setCreateForm(f => ({ ...f, email: e.target.value }))}
                 />
               </div>
               <div className={styles.field}>
@@ -243,6 +266,37 @@ export default function UserManagement() {
                 onClick={() => doResetPassword({ id: resetTarget._id, password: newPass })}
               >
                 {isResetting ? 'Resetting…' : 'Reset password'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit email modal ── */}
+      {emailTarget && (
+        <div className={styles.overlay}>
+          <div className={styles.modal}>
+            <h2>Edit email for <em>{emailTarget.username}</em></h2>
+            <div className={styles.field}>
+              <label>Email</label>
+              <input
+                type="email" value={newEmail}
+                onChange={e => setNewEmail(e.target.value)}
+                placeholder="you@example.com"
+              />
+              <span style={{ fontSize: '0.75rem', color: '#888' }}>
+                Used for approval/rejection notices, and admin signup alerts if this user is an admin.
+                Leave blank to remove.
+              </span>
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.cancelBtn} onClick={() => setEmailTarget(null)}>Cancel</button>
+              <button
+                className={styles.confirmBtn}
+                disabled={isUpdatingEmail}
+                onClick={() => doUpdateEmail({ id: emailTarget._id, email: newEmail })}
+              >
+                {isUpdatingEmail ? 'Saving…' : 'Save email'}
               </button>
             </div>
           </div>
