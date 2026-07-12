@@ -14,6 +14,7 @@ import styles from './Login.module.css';
 
 interface LoginForm {
   username: string;
+  email: string;
   password: string;
   confirmPassword: string;
   rememberMe: boolean;
@@ -33,6 +34,7 @@ export default function Login() {
 
   const [form, setForm] = useState<LoginForm>({
     username:        '',
+    email:           '',
     password:        '',
     confirmPassword: '',
     rememberMe:      false,
@@ -72,6 +74,8 @@ export default function Login() {
     if (!form.username.trim())  errs.username = 'Username is required';
     if (!form.password)         errs.password = 'Password is required';
     if (isSetup) {
+      if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+        errs.email = 'Enter a valid email address';
       if (form.password.length < 8)
         errs.password = 'Password must be at least 8 characters';
       if (form.password !== form.confirmPassword)
@@ -90,6 +94,7 @@ export default function Login() {
       if (isSetup) {
         await setupAccount({
           username:        form.username,
+          email:           form.email || undefined,
           password:        form.password,
           confirmPassword: form.confirmPassword,
         });
@@ -165,6 +170,27 @@ export default function Login() {
             />
             {errors.username && <span className={styles.error}>{errors.username}</span>}
           </div>
+
+          {/* Email — setup only, optional but recommended for admin alerts */}
+          {isSetup && (
+            <div className={styles.field}>
+              <label htmlFor="email">Email (optional)</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                autoComplete="email"
+                className={errors.email ? styles.inputError : ''}
+              />
+              {errors.email && <span className={styles.error}>{errors.email}</span>}
+              <span style={{ fontSize: '0.75rem', color: '#888' }}>
+                Used to email you when someone requests an account.
+              </span>
+            </div>
+          )}
 
           {/* Password */}
           <div className={styles.field}>

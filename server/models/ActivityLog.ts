@@ -26,6 +26,7 @@ export type ActivityAction =
   | 'user_registered'
   | 'user_approved'
   | 'user_rejected'
+  | 'user_email_updated'
   // Groups
   | 'group_created'
   | 'group_updated'
@@ -105,6 +106,7 @@ const ActivityLogSchema = new Schema<IActivityLog, IActivityLogModel>(
         'user_registered',
         'user_approved',
         'user_rejected',
+        'user_email_updated',
         // Groups
         'group_created',
         'group_updated',

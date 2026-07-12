@@ -89,6 +89,7 @@ export type ActivityAction =
   | 'user_registered'
   | 'user_approved'
   | 'user_rejected'
+  | 'user_email_updated'
   | 'group_created'
   | 'group_updated'
   | 'group_deleted'

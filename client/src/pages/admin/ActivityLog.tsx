@@ -32,6 +32,7 @@ const ACTION_LABELS: Record<ActivityAction, ActionMeta> = {
   user_registered:     { label: 'Registered',       color: '#2980b9' },
   user_approved:       { label: 'User approved',    color: '#27ae60' },
   user_rejected:       { label: 'User rejected',    color: '#e74c3c' },
+  user_email_updated:  { label: 'Email updated',    color: '#8e44ad' },
   group_created:       { label: 'Group created',    color: '#27ae60' },
   group_updated:       { label: 'Group updated',    color: '#f39c12' },
   group_deleted:       { label: 'Group deleted',    color: '#e74c3c' },

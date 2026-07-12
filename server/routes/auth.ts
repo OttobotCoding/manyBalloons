@@ -9,7 +9,7 @@ import User from '../models/User';
 import ActivityLog from '../models/ActivityLog';
 import Settings from '../models/Settings';
 import requireAuth from '../middleware/requireAuth';
-import { sendPendingApprovalEmail } from '../services/emailService';
+import { sendPendingApprovalEmail, sendAdminSignupAlert } from '../services/emailService';
 
 const router = express.Router();
 
@@ -52,20 +52,25 @@ router.post('/setup', async (req: Request, res: Response, next: NextFunction) =>
       });
     }
 
-    const { username, password, confirmPassword } = req.body as {
+    const { username, password, confirmPassword, email } = req.body as {
       username?: string;
       password?: string;
       confirmPassword?: string;
+      email?: string;
     };
     if (!username || !password)
       return res.status(422).json({ success: false, message: 'Username and password are required' });
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(422).json({ success: false, message: 'Enter a valid email address' });
     if (password !== confirmPassword)
       return res.status(422).json({ success: false, message: 'Passwords do not match' });
     if (password.length < 8)
       return res.status(422).json({ success: false, message: 'Password must be at least 8 characters' });
 
-    // First user is always admin
-    const user = await User.create({ username, password, role: 'admin' });
+    // First user is always admin. Email is optional here (unlike self-
+    // registration) but recommended — without one, this admin won't receive
+    // new-signup alerts until they set an email from the Users page.
+    const user = await User.create({ username, password, email, role: 'admin' });
 
     await ActivityLog.log({
       user:        user._id,
@@ -144,8 +149,40 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
           ip:          getIp(req),
         });
       }
+
+      // Also alert admins that a new account needs review. Independent of
+      // the user-facing email above — one failing doesn't affect the other.
+      try {
+        const admins = await User.find({ role: 'admin', email: { $ne: '' } });
+        const adminEmails = admins.map(a => a.email).filter(Boolean);
+        if (adminEmails.length) {
+          await sendAdminSignupAlert(settings, adminEmails, {
+            username:    user.username,
+            email:       user.email,
+            displayName: user.displayName,
+          });
+          await ActivityLog.log({
+            user:        user._id,
+            username:    user.username,
+            action:      'notification_sent',
+            description: `Admin signup alert sent to ${adminEmails.join(', ')} for "${user.username}"`,
+            ip:          getIp(req),
+          });
+        } else {
+          console.log('   No admin has an email on file — skipping admin signup alert.');
+        }
+      } catch (err) {
+        console.error('❌  Admin signup alert error:', (err as Error).message);
+        await ActivityLog.log({
+          user:        user._id,
+          username:    user.username,
+          action:      'notification_failed',
+          description: `Failed to send admin signup alert for "${user.username}": ${(err as Error).message}`,
+          ip:          getIp(req),
+        });
+      }
     } else {
-      console.log('   SMTP not configured — skipping pending-approval email.');
+      console.log('   SMTP not configured — skipping pending-approval email and admin alert.');
     }
 
     res.status(201).json({

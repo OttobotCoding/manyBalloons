@@ -40,7 +40,7 @@ function unwrap<T>(promise: Promise<AxiosResponse<T>>): Promise<T> {
 export const checkSetupNeeded = (): Promise<SetupStatusResponse> =>
   unwrap(api.get('/auth/setup-status'));
 
-export const setupAccount = (p: { username: string; password: string; confirmPassword: string }): Promise<ApiSuccess<User>> =>
+export const setupAccount = (p: { username: string; email?: string; password: string; confirmPassword: string }): Promise<ApiSuccess<User>> =>
   unwrap(api.post('/auth/setup', p));
 
 export const registerAccount = (p: { username: string; password: string; confirmPassword: string; email: string; displayName?: string }): Promise<MessageResponse> =>
@@ -126,6 +126,7 @@ export interface CreateUserInput {
   password: string;
   role?: 'admin' | 'user';
   displayName?: string;
+  email?: string;
 }
 
 export interface ActivityLogsQueryParams {
@@ -149,6 +150,9 @@ export const updateUserRole = (id: string, role: 'admin' | 'user'): Promise<ApiS
 
 export const updateUserStatus = (id: string, status: UserStatus): Promise<ApiSuccess<User>> =>
   unwrap(api.put(`/admin/users/${id}/status`, { status }));
+
+export const updateUserEmail = (id: string, email: string): Promise<ApiSuccess<User>> =>
+  unwrap(api.put(`/admin/users/${id}/email`, { email }));
 
 export const resetUserPassword = (id: string, p: { newPassword: string }): Promise<MessageResponse> =>
   unwrap(api.put(`/admin/users/${id}/password`, p));
