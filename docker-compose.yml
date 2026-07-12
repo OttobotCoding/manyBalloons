@@ -1,18 +1,6 @@
 version: '3.8'
 
 services:
-
-  # MongoDB — data persisted to Unraid appdata folder
-  mongo:
-    image: mongo:7
-    container_name: birthday-tracker-mongo
-    restart: unless-stopped
-    volumes:
-      - /mnt/user/appdata/birthday-tracker/mongo:/data/db
-    networks:
-      - bt-network
-
-  # Node/Express API — also serves the React build in production
   app:
     build:
       context: .
@@ -21,24 +9,13 @@ services:
     restart: unless-stopped
     environment:
       PORT: 5000
-      MONGO_URI: mongodb://mongo:27017/many_balloons
+      MONGO_URI: mongodb://host.docker.internal:27017/many_balloons
       NODE_ENV: production
-      # Generate your own with: openssl rand -hex 32
-      JWT_SECRET: CHANGE_ME_TO_A_RANDOM_SECRET
-      # Origin the browser connects from. Only matters if you access the app
-      # from a different host/port than the container serves — same-origin
-      # setups (typical) can leave this as-is.
-      CLIENT_ORIGIN: http://localhost:5000
+      JWT_SECRET: "replace-with-a-long-random-string"
       TZ: America/Denver
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # lets the container reach the host's published port
     volumes:
-      - /mnt/user/appdata/birthday-tracker/uploads
+      - /mnt/user/appdata/birthday-tracker/uploads:/app/server/dist/uploads
     ports:
       - "5000:5000"
-    depends_on:
-      - mongo
-    networks:
-      - bt-network
-
-networks:
-  bt-network:
-    driver: bridge

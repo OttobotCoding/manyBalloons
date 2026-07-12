@@ -19,6 +19,9 @@ server/uploads/*
 .DS_Store
 Thumbs.db
 
+# Local deploy script - host-specific, not shared
+deploy.sh
+
 # Logs
 *.log
 npm-debug.log*
